@@ -18,6 +18,7 @@ package commonblobgo
 
 import (
 	"context"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"io"
 	"time"
 
@@ -45,12 +46,14 @@ func newAWSCloudStorage(
 
 	if s3Endpoint != "" {
 		awsConfig = aws.Config{
+			Credentials:      credentials.NewEnvCredentials(),
 			Endpoint:         aws.String(s3Endpoint),
 			Region:           aws.String(s3Region),
 			S3ForcePathStyle: aws.Bool(true), //path style for localstack
 		}
 	} else {
 		awsConfig = aws.Config{
+			Credentials:      credentials.NewEnvCredentials(),
 			Region:           aws.String(s3Region),
 			S3ForcePathStyle: aws.Bool(true), //path style for localstack
 		}
