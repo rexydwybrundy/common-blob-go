@@ -18,7 +18,7 @@ package commonblobgo
 
 import (
 	"context"
-	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/defaults"
 	"io"
 	"time"
 
@@ -44,25 +44,41 @@ func newAWSCloudStorage(
 	// create vanilla AWS client
 	var awsConfig aws.Config
 
+	//providers := make([]credentials.Provider, 0)
+	//
+	//envProvider := &credentials.EnvProvider{}
+	//ec2RoleProvider := &ec2rolecreds.EC2RoleProvider{}
+	//
+	//providers = append(providers, envProvider)
+	//providers = append(providers, ec2RoleProvider)
+
+	// credentials.NewCredentials(&ec2rolecreds.EC2RoleProvider{})
+
+	//credentials.NewCredentials(&ec2rolecreds.EC2RoleProvider{
+	//		Client: ec2metadata.New(awsSession, &awsConfig),
+	//	})
+
+
+
 	if s3Endpoint != "" {
 		awsConfig = aws.Config{
-			Credentials:      credentials.NewEnvCredentials(),
 			Endpoint:         aws.String(s3Endpoint),
 			Region:           aws.String(s3Region),
 			S3ForcePathStyle: aws.Bool(true), //path style for localstack
 		}
 	} else {
 		awsConfig = aws.Config{
-			Credentials:      credentials.NewEnvCredentials(),
 			Region:           aws.String(s3Region),
 			S3ForcePathStyle: aws.Bool(true), //path style for localstack
 		}
 	}
+	awsConfig.Credentials = defaults.CredChain(&awsConfig, defaults.Handlers())
 
 	awsSession, err := session.NewSession(&awsConfig)
 	if err != nil {
 		return nil, err
 	}
+
 
 	bucket, err := s3blob.OpenBucket(ctx, awsSession, bucketName, nil)
 	if err != nil {
