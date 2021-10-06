@@ -211,9 +211,13 @@ func (ts *AWSTestCloudStorage) GetSignedURL(
 	options := &blob.SignedURLOptions{
 		Expiry:                   opts.Expiry,
 		Method:                   opts.Method,
-		ContentType:              opts.ContentType,
 		EnforceAbsentContentType: opts.EnforceAbsentContentType,
 	}
+
+	if opts != nil && opts.ContentType != "" {
+		options.ContentType = opts.ContentType
+	}
+
 	return ts.bucket.SignedURL(context.Background(), key, options)
 }
 
