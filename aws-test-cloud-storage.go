@@ -59,10 +59,6 @@ func newAWSTestCloudStorage(
 		}
 	}
 
-	// Create default credentials. Default credential wll get the credential from environment provider, shared
-	// credential provider, or ec2 role
-	awsConfig.Credentials = defaults.CredChain(&awsConfig, defaults.Handlers())
-
 	awsSession, err := session.NewSession(&awsConfig)
 	if err != nil {
 		return nil, err
